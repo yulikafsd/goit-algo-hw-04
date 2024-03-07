@@ -1,11 +1,11 @@
 from pathlib import PurePath
 
-path = PurePath(__file__).parent
+dir_path = PurePath(__file__).parent
 
 def total_salary(path):
     
     try:
-        with open(f'{path}/salaries.txt', 'r', encoding='utf-8') as fh:
+        with open(f'{path}/data/salaries.txt', 'r', encoding='utf-8') as fh:
             total = 0
             workers = 0
             
@@ -25,4 +25,4 @@ def total_salary(path):
         print('Значення заробітної плати не є числом')
 
 if __name__ == '__main__':
-    total_salary(path)
+    total_salary(dir_path)
