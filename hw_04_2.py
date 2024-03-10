@@ -7,8 +7,8 @@ def get_cats_info(path):
     try:
         with open(path, 'r', encoding='utf-8') as fh:
             for ind, line in enumerate(fh):
-                cat_data = line.strip().split(',')
-                cat = {'id': cat_data[0], 'name': cat_data[1], 'age': cat_data[2]}
+                cat_id, cat_name, cat_age = line.strip().split(',')
+                cat = {'id': cat_id, 'name': cat_name, 'age': cat_age}
                 cats.append(cat)
                 print(f'Кіт {ind}: {cat}')
         return cats
