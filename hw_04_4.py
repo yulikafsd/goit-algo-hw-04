@@ -4,64 +4,38 @@ def parse_input(user_input):
     return cmd, *args
 
 def add_contact(args, contacts):
-
-    # Обробка ValueError якщо аргс менше ніж має бути ----------------------!
-
     name, phone = args
-
-    # якщо контакта з таким ім'ям немає, записати
-    if contacts.get(name) == None:
-        contacts[name] = phone
-        return "Contact added."
-    
-    # якщо контакт з таким ім'ям вже є, перепитати
-    else:
-        user_input = input("A contact with this name already exists.\nDo you really want to change this contact? Y/N: ")
-        if user_input.lower() == 'y':
-            contacts[name] = phone
-            return "Contact changed."
-        else:
-            return "Contact was not changed."
+    contacts[name.lower()] = phone
+    return f"Contact {name.capitalize()} with phone {phone} added."
 
 def change_contact(args, contacts):
-
-    # Обробка ValueError якщо аргс менше ніж має бути ----------------------!
-
     name, phone = args
-
-    # Повідомлення про помилку, якщо ім'я не знайдено
-    if contacts.get(name) == None:
-        user_input=input("Contact with this name was not found. Add a new contact? Y/N: ")
-        if user_input.lower() == 'y':
-            contacts[name] = phone
-            return "Contact added."
-        else:
-            return "Contact was not added."
-
-    else:
-        contacts[name] = phone
-        return "Contact was changed."
+    contacts[name.lower()] = phone
+    return f"{name.capitalize()}'s phone changed to: {phone}."
 
 def show_phone(args, contacts):
-    
-    # Обробка IndexError або довжина аргс, якщо аргс менше ніж має бути -------!
-
     name = args[0]
 
     # Повідомлення про помилку, якщо ім'я не знайдено
-    if contacts.get(name) == None:
-        return "Contact with this name was not found"
-    # Вивід: [номер телефону]
+    if contacts.get(name.lower()) == None:
+        return f"Contact with name {name.capitalize()} was not found"
+    
     else:
-        return contacts[name]
+        # Якщо знайдено, вивід: [номер телефону]
+        return contacts[name.lower()]
 
 def show_all(contacts):
     
     if len(contacts) == 0:
-        return "Контактів не знайдено"
+        return "No contacts were found"
     
+    print(contacts)
+    contacts_string = ""
     for key, value in contacts.items():
-        return(f"{key}: {value}")
+        # тут простіше було б зробити одразу print кожного контакту, 
+        # але за умовами ДЗ всі print мають бути в main, тому:
+        contacts_string += f"\n{key.capitalize()}: {value}" 
+    return f"Your contacts: {contacts_string}"
 
 def main():
     contacts = {}
@@ -70,30 +44,69 @@ def main():
     
     while True:
         user_input = input("Enter a command: ")
-        command, *args = parse_input(user_input)
-
-        match command:
-            case "close" | "exit":
-                print("Good bye!")
-                break
-
-            case "hello":
-                print("How can I help you?")
-
-            case "add":
-                print(add_contact(args, contacts))
-
-            case "change":
-                print(change_contact(args,contacts))
-
-            case "phone":
-                print(show_phone(args, contacts))
         
-            case "all":
-                print(show_all(contacts))
+        try:
+            command, *args = parse_input(user_input)
 
-            case _:
-                print("Invalid command.")
-                
+            match command:
+                case "close" | "exit":
+                    print("Good bye!")
+                    break
+
+                case "hello":
+                    print("How can I help you?")
+
+                case "add":
+                    try:
+                        # якщо контакта з таким ім'ям немає, записати
+                        if contacts.get(args[0].lower()) == None:
+                            print(add_contact(args, contacts))
+                        
+                        # якщо контакт з таким ім'ям вже є, перепитати
+                        else:
+                            user_input = input("Contact with this name already exists.\nChange this contact? Y/N: ")
+                            if user_input.lower() == 'y':
+                                print(change_contact(args, contacts))
+                            else:
+                                print("Contact was not changed.")
+                    
+                    # Обробка винятка, якщо аргс менше ніж має бути
+                    except Exception as e:
+                        print(f"Wrong format. Please, enter: add [contact_name] [phone_number]. Error - {e}")
+
+                case "change":
+                    try:               
+                        # Якщо ім'я не знайдено, пропонуємо додати
+                        if contacts.get(args[0].lower()) == None:
+                            user_input = input("Contact with this name was not found.\nAdd a new contact? Y/N: ")
+                            if user_input.lower() == 'y':
+                                print(add_contact(args,contacts))
+                            else:
+                                print("Contact was not added.")
+
+                        else:
+                            print(change_contact(args,contacts))
+                    
+                    # Обробка винятка, якщо аргс менше ніж має бути
+                    except Exception as e:
+                        print(f"Wrong format. Please, enter: change [contact_name]. Error - {e}")
+
+                case "phone":
+                    try:
+                        print(show_phone(args, contacts))
+                    
+                    # Обробка винятка, якщо аргс менше ніж має бути
+                    except Exception as e:
+                        print(f"Wrong format. Please, enter: phone [contact_name]. Error - {e}")
+            
+                case "all":
+                    print(show_all(contacts))
+
+                case _:
+                    print("Invalid command.")
+        
+        except Exception as e:
+            print(f"No command entered. Error - {e}")
+
 if __name__ == "__main__":
     main()
