@@ -147,24 +147,26 @@ funcs = [
     python_sorted,
 ]
 
+
 lengths = [10, 100, 5000, 10000, 50000]  # number of numbers in an array
+arrays = {N: random.choices(range(0, 201), k=N) for N in lengths}  # create arrays
 
-# Створюємо всі масиви НАПЕРЕД
-arrays = {N: random.choices(range(0, 201), k=N) for N in lengths}
 
-# Друкуємо заголовок таблиці
-print(f"{'Function':>15}", end="")
-for N in lengths:
-    print(f"{N:>12}", end="")
-print()
+if __name__ == "__main__":
 
-# Тестування
-for func in funcs:
-    print(f"{func.__name__:>15}", end="")
+    # Print header
+    print(f"{'Function':>15}", end="")
     for N in lengths:
-        arr = arrays[N].copy()
-        start = timeit.default_timer()
-        func(arr)
-        end = timeit.default_timer()
-        print(f"{end - start:12.6f}", end="")
+        print(f"{N:>12}", end="")
     print()
+
+    # Test algorithms
+    for func in funcs:
+        print(f"{func.__name__:>15}", end="")
+        for N in lengths:
+            arr = arrays[N].copy()
+            start = timeit.default_timer()
+            func(arr)
+            end = timeit.default_timer()
+            print(f"{end - start:12.6f}", end="")
+        print()
